@@ -110,37 +110,49 @@ def get_countries(names, df, type):
     return countries
 
 def check_same_institution(paper):
+    conflict = False
     reviewers_institutions = paper['Reviewers_Institutions']
     metareviewers_institutions = paper['Metareviewers_Institutions']
     authors_institutions = paper['Authors_Institutions']
     for mi in metareviewers_institutions:
         if mi in reviewers_institutions:
             print(f'PAPER #{paper['Paper_ID']}: Reviewer and Metareviewer from the same institution -> {mi}')
+            conflict = True
         if mi in authors_institutions:
             print(f'PAPER #{paper['Paper_ID']}: Author and Metareviewer from the same institution -> {mi}')
+            conflict = True
     for ri in reviewers_institutions:
         if ri in authors_institutions:
             print(f'PAPER #{paper['Paper_ID']}: Author and Reviewer from the same institution -> {ri}')
+            conflict = True
+    return conflict
 
 def check_same_domain(paper):
+    conflict = False
     reviewers_domains = paper['Reviewers_Domains']
     metareviewers_domains = paper['Metareviewers_Domains']
     authors_domains = paper['Authors_Domains']
     for md in metareviewers_domains:
         if md in reviewers_domains:
             print(f'PAPER #{paper['Paper_ID']}: Reviewer and Metareviewer with the same email domain -> {md}')
+            conflict = True
         if md in authors_domains:
             print(f'PAPER #{paper['Paper_ID']}: Author and Metareviewer with the same email domain -> {md}')
+            conflict = True
     for rd in reviewers_domains:
         if rd in authors_domains:
             print(f'PAPER #{paper['Paper_ID']}: Author and Reviewer with the same email domain -> {rd}')
+            conflict = True
+    return conflict
 
 def check_same_country(paper):
+    conflict = False
     reviewers_countries = paper['Reviewers_Countries']
     metareviewers_countries = paper['Metareviewers_Countries']
     for mc in metareviewers_countries:
         if mc in reviewers_countries:
             print(f'PAPER #{paper['Paper_ID']}: Reviewer and Metareviewer from the same country -> {mc}')
+            conflict = True
     same_country = []
     for rc in reviewers_countries:
         count = reviewers_countries.count(rc)
@@ -150,6 +162,8 @@ def check_same_country(paper):
     if len(same_country) > 0:
         print(f'PAPER #{paper['Paper_ID']}: more than {max_reviewers_from_same_country} reviewers from -> {same_country}')
         print(f'   + reviewers for this paper are from {reviewers_countries}')
+        conflict = True
+    return conflict
 
 # === Read Input Files ===
 papers_df = pd.read_excel('Papers.xlsx')
@@ -181,16 +195,17 @@ for _, row in papers_df.iterrows():
 
 # Check conflicts
 
-print('Checking for assignments with:')
+print('\nChecking for assignments with:')
 print('   + authors, reviewers or metareviewes from the same institution...')
 print('   + authors, reviewers or metareviewes with the same email address domain...')
 print(f'   + assignments with more than {max_reviewers_from_same_country} reviewer/metareviewer from the same country... \n')
 
 for paper in papers:
-    check_same_institution(paper) 
-    check_same_domain(paper)
-    check_same_country(paper)
+    c1 = check_same_institution(paper)
+    c2 = check_same_domain(paper)
+    c3 = check_same_country(paper)
+    if c1 or c2 or c3:
+        print('')
 
 #for paper in papers:
 #    print(paper)
-
