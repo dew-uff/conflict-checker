@@ -12,8 +12,12 @@ As inputs, the script reads 3 spreadsheets:
 
 - **Papers.xlsx**, which can be obtained directly from [CMT](https://cmt3.research.microsoft.com/) after the reviewer assignment is done. For that, go to the Submissions page, filter for the correct submission track, then filter for papers with status "Awaiting Decision". Go to the Actions button on the top right, select "Export to Excel/Submissions".
 
-- **Reviewers.xlsx** and **Metareviewers.xlsx**, which contain the list of reviewers and metareviewers, respectively. These are NOT exported from CMT, as they contain info that is not there. Also, some reviewers/metareviewers use generic email accounts on CMT instead of their institutional email addresses, and this hinders checking for domain conflicts. These two files should contain five columns: "First Name", "Last Name", "Email Address", "Organization", "Country". Samples of these files are available in the docs folder.  
-  
+- **Reviewers.xlsx** and **Metareviewers.xlsx**, which contain the list of reviewers and metareviewers, respectively. **These are NOT exported from CMT**, as they contain info that is not there. Also, some reviewers/metareviewers use generic email accounts (such as Gmail, Outlook, etc.) on CMT instead of their institutional email addresses, and this hinders checking for domain conflicts. These two files should contain five columns: "First Name", "Last Name", "Email Address", "Organization", "Country". Samples of these files are available in the docs folder.  
+
+## Output 
+
+The script prints out the set of conflicts it finds in the assignments. Once they are manually corrected in CMT, a new assignment spreadsheet can be downloaded and the script can be used to check for new conflicts, as many times as necessary. 
+
 ## Instalation 
 
 Create a venv 
