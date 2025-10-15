@@ -145,7 +145,8 @@ def check_same_domain(paper):
             conflict = True
     return conflict
 
-def check_same_country(paper):
+# the previous_conflict flag is used to print the countries of the reviewers in case there is any kind of conflict with this paper
+def check_same_country(paper, previous_conflict):
     conflict = False
     reviewers_countries = paper['Reviewers_Countries']
     metareviewers_countries = paper['Metareviewers_Countries']
@@ -162,7 +163,11 @@ def check_same_country(paper):
     if len(same_country) > 0:
         print(f'PAPER #{paper['Paper_ID']}: more than {max_reviewers_from_same_country} reviewers from -> {same_country}')
         print(f'   + reviewers for this paper are from {reviewers_countries}')
+        print(f'   + metareviewers for this paper are from {metareviewers_countries}')
         conflict = True
+    elif previous_conflict:
+        print(f'   + reviewers for this paper are from {reviewers_countries}')
+        print(f'   + metareviewers for this paper are from {metareviewers_countries}')
     return conflict
 
 # === Read Input Files ===
@@ -203,9 +208,10 @@ print(f'   + assignments with more than {max_reviewers_from_same_country} review
 for paper in papers:
     c1 = check_same_institution(paper)
     c2 = check_same_domain(paper)
-    c3 = check_same_country(paper)
+    c3 = check_same_country(paper, c1 or c2)
     if c1 or c2 or c3:
         print('')
 
 #for paper in papers:
 #    print(paper)
+
