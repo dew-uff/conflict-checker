@@ -15,7 +15,8 @@ def get_names(text):
         # remove institution
         pos = name_inst.find('(')
         name = name_inst[0:pos].strip()
-        names.append(name)
+        normalized_name = " ".join(name.split())
+        names.append(normalized_name)
     return names
 
 # receives a string with authors names in the format
@@ -160,14 +161,21 @@ def check_same_country(paper, previous_conflict):
         if count > max_reviewers_from_same_country:
             if rc not in same_country:
                 same_country.append(rc)
-    if len(same_country) > 0:
+                conflict = True
+    if conflict:
         print(f'PAPER #{paper['Paper_ID']}: more than {max_reviewers_from_same_country} reviewers from -> {same_country}')
-        print(f'   + reviewers for this paper are from {reviewers_countries}')
-        print(f'   + metareviewers for this paper are from {metareviewers_countries}')
+        print(f'   + authors are \n      [{paper['Authors']}]')
+        print(f'   + reviewers are \n      [{paper['Reviewers_Info']}]')
+        print(f'   + metareviewers are \n      [{paper['Metareviewers_Info']}]')
+        print(f'   + reviewers are from {reviewers_countries}')
+        print(f'   + metareviewers are from {metareviewers_countries}')
         conflict = True
     elif previous_conflict:
-        print(f'   + reviewers for this paper are from {reviewers_countries}')
-        print(f'   + metareviewers for this paper are from {metareviewers_countries}')
+        print(f'   + authors are \n      [{paper['Authors']}]')
+        print(f'   + reviewers are \n      [{paper['Reviewers_Info']}]')
+        print(f'   + metareviewers are \n      [{paper['Metareviewers_Info']}]')
+        print(f'   + reviewers are from {reviewers_countries}')
+        print(f'   + metareviewers are from {metareviewers_countries}')
     return conflict
 
 # === Read Input Files ===
@@ -182,14 +190,17 @@ for _, row in papers_df.iterrows():
     metareviewers_names =  get_names(row['MetaReviewers'])
     papers.append({
         'Paper_ID': row['Paper ID'],
+        'Authors': row['Authors'],
         'Authors_Institutions': get_authors_institutions(row['Authors']),
         'Authors_Domains': get_cmt_domains(row['Author Emails']),
+        'Reviewers_Info': row['Reviewers'],
         'Reviewers': reviewers_names,
         'Reviewers_Institutions': get_institutions(reviewers_names, reviewers, 'reviewers'),
         # Looks for domains in two spreadsheets: the Papers spreadsheet that was extracted from CMT,
         # and the Reviewers/Metareviewers spreadsheets that were create by the PC Chairs
         'Reviewers_Domains': get_cmt_domains(row['Reviewer Emails']) + get_domains(reviewers_names, reviewers, 'reviewers'),
         'Reviewers_Countries': get_countries(reviewers_names, reviewers, 'reviewers'),
+        'Metareviewers_Info': row['MetaReviewers'],
         'Metareviewers': metareviewers_names,
         'Metareviewers_Institutions': get_institutions(metareviewers_names, metareviewers, 'metareviewers'),
         # Looks for domains in two spreadsheets: the Papers spreadsheet that was extracted from CMT,
